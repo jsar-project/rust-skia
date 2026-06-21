@@ -103,7 +103,7 @@ extern "C" {
     }
 
     SkTypeface* C_FontCollection_defaultFallback(FontCollection* self, SkUnichar unicode, SkFontStyle fontStyle, const SkString* locale) {
-        return self->defaultFallback(unicode, fontStyle, *locale).release();
+        return self->defaultFallback(unicode, fontStyle, *locale, std::nullopt).release();
     }
 
     SkTypeface* C_FontCollection_defaultFallback2(FontCollection* self) {

@@ -4,6 +4,7 @@
 #include "modules/skshaper/include/SkShaper.h"
 #include "modules/skshaper/include/SkShaper_harfbuzz.h"
 #include "modules/skshaper/include/SkShaper_skunicode.h"
+#include "modules/skunicode/include/SkUnicode.h"
 #if defined(SK_UNICODE_ICU_IMPLEMENTATION)
 #include "modules/skunicode/include/SkUnicode_icu.h"
 #endif
@@ -14,6 +15,14 @@
 #if defined(_WIN32) && defined(SK_UNICODE_ICU_IMPLEMENTATION)
 #include "third_party/icu/SkLoadICU.h"
 #endif
+
+static sk_sp<SkUnicode> make_icu_unicode() {
+#if defined(SK_UNICODE_ICU_IMPLEMENTATION)
+    return SkUnicodes::ICU::Make();
+#else
+    return nullptr;
+#endif
+}
 
 extern "C" SkShaper* C_SkShaper_MakeCoreText() {
 #ifdef SK_SHAPER_CORETEXT_AVAILABLE
@@ -221,7 +230,7 @@ extern "C" SkShaper::ScriptRunIterator* C_SkShapers_Primitive_TrivialScriptRunIt
 // SkShapers::HB
 
 extern "C" SkShaper* C_SkShapers_HB_ShaperDrivenWrapper(SkFontMgr* fontMgr) {
-    auto unicode = SkUnicodes::ICU::Make();
+    auto unicode = make_icu_unicode();
     if (!unicode) {
         return nullptr;
     }
@@ -229,7 +238,7 @@ extern "C" SkShaper* C_SkShapers_HB_ShaperDrivenWrapper(SkFontMgr* fontMgr) {
 }
 
 extern "C" SkShaper* C_SkShapers_HB_ShapeThenWrap(SkFontMgr* fontMgr) {
-    auto unicode = SkUnicodes::ICU::Make();
+    auto unicode = make_icu_unicode();
     if (!unicode) {
         return nullptr;
     }
@@ -237,7 +246,7 @@ extern "C" SkShaper* C_SkShapers_HB_ShapeThenWrap(SkFontMgr* fontMgr) {
 }
 
 extern "C" SkShaper* C_SkShapers_HB_ShapeDontWrapOrReorder(SkFontMgr* fontMgr) {
-    auto unicode = SkUnicodes::ICU::Make();
+    auto unicode = make_icu_unicode();
     if (!unicode) {
         return nullptr;
     }
@@ -247,7 +256,7 @@ extern "C" SkShaper* C_SkShapers_HB_ShapeDontWrapOrReorder(SkFontMgr* fontMgr) {
 // SkShapers::unicode
 
 extern "C" SkShaper::BiDiRunIterator* C_SkShapers_unicode_BidiRunIterator(const char* utf8, size_t utf8Bytes, uint8_t bidiLevel) {
-    auto unicode = SkUnicodes::ICU::Make();
+    auto unicode = make_icu_unicode();
     if (!unicode) {
         return nullptr;
     }
