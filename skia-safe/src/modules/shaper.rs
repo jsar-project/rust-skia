@@ -72,14 +72,14 @@ impl Shaper {
     }
 
     pub fn new_core_text() -> Option<Self> {
-        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
         crate::icu::init();
 
         Self::from_ptr(unsafe { sb::C_SkShaper_MakeCoreText() })
     }
 
     pub fn new(font_mgr: impl Into<Option<FontMgr>>) -> Self {
-        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
         crate::icu::init();
 
         Self::from_ptr(unsafe { sb::C_SkShaper_Make(font_mgr.into().into_ptr_or_null()) }).unwrap()

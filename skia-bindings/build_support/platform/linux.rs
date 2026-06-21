@@ -57,7 +57,7 @@ pub fn link_libraries(features: &Features) -> Vec<String> {
         add_pkg_config_libs(&mut libs, "harfbuzz", &["harfbuzz"]);
         add_pkg_config_libs(&mut libs, "expat", &["expat"]);
 
-        if !features[feature::TEXTLAYOUT_ICU4X] {
+        if !features[feature::TEXTLAYOUT_CLIENT_ICU] {
             // ICU libraries - try pkg-config first, fallback to manual linking
             add_pkg_config_libs(&mut libs, "icu-uc", &["icuuc"]);
             add_pkg_config_libs(&mut libs, "icu-i18n", &["icui18n"]);

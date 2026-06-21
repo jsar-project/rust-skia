@@ -1949,7 +1949,7 @@ impl Canvas {
         #[cfg(all(
             feature = "textlayout",
             feature = "embed-icudtl",
-            not(feature = "textlayout-icu4x")
+            not(feature = "textlayout-client-icu")
         ))]
         crate::icu::init();
         unsafe {

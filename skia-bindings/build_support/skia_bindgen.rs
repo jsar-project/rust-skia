@@ -906,16 +906,16 @@ pub(crate) mod definitions {
                 "obj/modules/skparagraph/skparagraph.ninja".into(),
                 "obj/modules/skunicode/skunicode_core.ninja".into(),
             ]);
-            if features[feature::TEXTLAYOUT_ICU4X] {
+            if features[feature::TEXTLAYOUT_CLIENT_ICU] {
                 files.extend(vec![
-                    "obj/modules/skunicode/skunicode_icu4x.ninja".into(),
-                    "obj/third_party/icu4x/icu4x.ninja".into(),
+                    "obj/modules/skunicode/skunicode_client_icu.ninja".into(),
+                    "obj/third_party/icu_bidi/icu_bidi.ninja".into(),
                 ]);
             } else {
                 files.push("obj/modules/skunicode/skunicode_icu.ninja".into());
             }
             // shaper.cpp includes SkLoadICU.h when using the ICU implementation.
-            if !features[feature::TEXTLAYOUT_ICU4X] && !use_system_libraries {
+            if !features[feature::TEXTLAYOUT_CLIENT_ICU] && !use_system_libraries {
                 files.push("obj/third_party/icu/icu.ninja".into())
             }
         }

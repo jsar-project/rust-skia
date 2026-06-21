@@ -8,6 +8,11 @@ use crate::prelude::*;
 pub type ParagraphBuilder = RefHandle<sb::skia_textlayout_ParagraphBuilder>;
 unsafe_send_sync!(ParagraphBuilder);
 
+pub type UnicodePosition = sb::SkUnicode_Position;
+pub type LineBreakType = sb::SkUnicode_LineBreakType;
+variant_name!(LineBreakType::SoftLineBreak);
+variant_name!(LineBreakType::HardLineBreak);
+
 impl NativeDrop for sb::skia_textlayout_ParagraphBuilder {
     fn drop(&mut self) {
         unsafe { sb::C_ParagraphBuilder_delete(self) }
@@ -75,14 +80,57 @@ impl ParagraphBuilder {
             .unwrap()
     }
 
-    // TODO: Wrap SetWords*, SetGraphemeBreaks*, setLineBreaks*, getClientICUData, setUnicode.
+    #[cfg(feature = "textlayout-client-icu")]
+    pub fn set_words_utf8(&mut self, words: &[UnicodePosition]) -> &mut Self {
+        unsafe {
+            sb::C_ParagraphBuilder_setWordsUtf8(self.native_mut(), words.as_ptr(), words.len())
+        }
+        self
+    }
+
+    #[cfg(feature = "textlayout-client-icu")]
+    pub fn set_grapheme_breaks_utf8(&mut self, graphemes: &[UnicodePosition]) -> &mut Self {
+        unsafe {
+            sb::C_ParagraphBuilder_setGraphemeBreaksUtf8(
+                self.native_mut(),
+                graphemes.as_ptr(),
+                graphemes.len(),
+            )
+        }
+        self
+    }
+
+    #[cfg(feature = "textlayout-client-icu")]
+    pub fn set_line_breaks_utf8(
+        &mut self,
+        line_breaks: &[(UnicodePosition, LineBreakType)],
+    ) -> &mut Self {
+        let mut positions = Vec::with_capacity(line_breaks.len());
+        let mut types = Vec::with_capacity(line_breaks.len());
+        for &(position, break_type) in line_breaks {
+            positions.push(position);
+            types.push(break_type);
+        }
+        unsafe {
+            sb::C_ParagraphBuilder_setLineBreaksUtf8(
+                self.native_mut(),
+                positions.as_ptr(),
+                types.as_ptr(),
+                line_breaks.len(),
+            )
+        }
+        self
+    }
+
+    // TODO: Wrap setWordsUtf16, setGraphemeBreaksUtf16, setLineBreaksUtf16,
+    // getClientICUData, setUnicode.
 
     pub fn reset(&mut self) {
         unsafe { sb::C_ParagraphBuilder_Reset(self.native_mut()) }
     }
 
     pub fn new(style: &ParagraphStyle, font_collection: impl Into<FontCollection>) -> Self {
-        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
         crate::icu::init();
 
         Self::from_ptr(unsafe {

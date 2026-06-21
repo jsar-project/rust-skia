@@ -4,7 +4,7 @@ use super::ScriptRunIterator;
 use crate::{prelude::*, Borrows, FontMgr, FourByteTag, Shaper};
 
 pub fn shaper_driven_wrapper(fallback_font_mgr: impl Into<Option<FontMgr>>) -> Option<Shaper> {
-    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
     crate::icu::init();
 
     Shaper::from_ptr(unsafe {
@@ -13,7 +13,7 @@ pub fn shaper_driven_wrapper(fallback_font_mgr: impl Into<Option<FontMgr>>) -> O
 }
 
 pub fn shape_then_wrap(fallback_font_mgr: impl Into<Option<FontMgr>>) -> Option<Shaper> {
-    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
     crate::icu::init();
 
     Shaper::from_ptr(unsafe {
@@ -22,7 +22,7 @@ pub fn shape_then_wrap(fallback_font_mgr: impl Into<Option<FontMgr>>) -> Option<
 }
 
 pub fn shape_dont_wrap_or_reorder(fallback_font_mgr: impl Into<Option<FontMgr>>) -> Option<Shaper> {
-    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
     crate::icu::init();
 
     Shaper::from_ptr(unsafe {

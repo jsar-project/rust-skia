@@ -22,8 +22,7 @@ pub mod lib {
     pub const SK_RESOURCES: &str = "skresources";
     pub const SK_UNICODE_CORE: &str = "skunicode_core";
     pub const SK_UNICODE_ICU: &str = "skunicode_icu";
-    pub const SK_UNICODE_ICU4X: &str = "skunicode_icu4x";
-    pub const ICU4X_RUST: &str = "icu4x_rust";
+    pub const SK_UNICODE_CLIENT_ICU: &str = "skunicode_client_icu";
 }
 
 /// The configuration of the resulting binaries.
@@ -72,15 +71,14 @@ impl BinariesConfiguration {
         let mut additional_files = Vec::new();
 
         if features[feature::TEXTLAYOUT] {
-            if target.is_windows() && !features[feature::TEXTLAYOUT_ICU4X] {
+            if target.is_windows() && !features[feature::TEXTLAYOUT_CLIENT_ICU] {
                 additional_files.push(ICUDTL_DAT.into());
             }
             ninja_built_libraries.push(lib::SK_PARAGRAPH.into());
             ninja_built_libraries.push(lib::SK_SHAPER.into());
             ninja_built_libraries.push(lib::SK_UNICODE_CORE.into());
-            if features[feature::TEXTLAYOUT_ICU4X] {
-                ninja_built_libraries.push(lib::SK_UNICODE_ICU4X.into());
-                additional_libraries.push(lib::ICU4X_RUST.into());
+            if features[feature::TEXTLAYOUT_CLIENT_ICU] {
+                ninja_built_libraries.push(lib::SK_UNICODE_CLIENT_ICU.into());
             } else {
                 ninja_built_libraries.push(lib::SK_UNICODE_ICU.into());
             }

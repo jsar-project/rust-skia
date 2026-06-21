@@ -99,7 +99,7 @@ impl Dom {
         #[cfg(all(
             feature = "embed-icudtl",
             feature = "textlayout",
-            not(feature = "textlayout-icu4x")
+            not(feature = "textlayout-client-icu")
         ))]
         crate::icu::init();
 

@@ -1,9 +1,9 @@
 #[cfg(windows)]
 pub fn init() {
-    #[cfg(not(feature = "textlayout-icu4x"))]
+    #[cfg(not(feature = "textlayout-client-icu"))]
     static icudtl: &[u8] = include_bytes!(concat!(env!("OUT_DIR"), "/skia/icudtl.dat"));
 
-    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
+    #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-client-icu")))]
     {
         use std::sync::Mutex;
 
@@ -17,7 +17,7 @@ pub fn init() {
         drop(lock);
     }
 
-    #[cfg(all(not(feature = "embed-icudtl"), not(feature = "textlayout-icu4x")))]
+    #[cfg(all(not(feature = "embed-icudtl"), not(feature = "textlayout-client-icu")))]
     {
         use std::env;
         use std::fs;

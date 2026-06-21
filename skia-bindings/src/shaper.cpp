@@ -4,12 +4,14 @@
 #include "modules/skshaper/include/SkShaper.h"
 #include "modules/skshaper/include/SkShaper_harfbuzz.h"
 #include "modules/skshaper/include/SkShaper_skunicode.h"
+#if defined(SK_UNICODE_ICU_IMPLEMENTATION)
 #include "modules/skunicode/include/SkUnicode_icu.h"
+#endif
 #ifdef SK_SHAPER_CORETEXT_AVAILABLE
 #include "modules/skshaper/include/SkShaper_coretext.h"
 #endif
 
-#if defined(_WIN32)
+#if defined(_WIN32) && defined(SK_UNICODE_ICU_IMPLEMENTATION)
 #include "third_party/icu/SkLoadICU.h"
 #endif
 

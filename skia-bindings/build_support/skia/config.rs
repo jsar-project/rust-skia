@@ -166,15 +166,16 @@ impl FinalBuildConfiguration {
             }
 
             if features[feature::TEXTLAYOUT] {
-                let use_icu4x = features[feature::TEXTLAYOUT_ICU4X];
+                let use_client_icu = features[feature::TEXTLAYOUT_CLIENT_ICU];
                 builder
                     .arg("skia_enable_skshaper", yes())
-                    .arg("skia_use_icu", yes_if(!use_icu4x))
+                    .arg("skia_use_icu", yes_if(!use_client_icu))
                     .arg(
                         "skia_use_system_icu",
-                        yes_if(!use_icu4x && use_system_libraries),
+                        yes_if(!use_client_icu && use_system_libraries),
                     )
-                    .arg("skia_use_icu4x", yes_if(use_icu4x))
+                    .arg("skia_use_client_icu", yes_if(use_client_icu))
+                    .arg("skia_use_icu4x", no())
                     .arg("skia_use_harfbuzz", yes())
                     .arg("skia_pdf_subset_harfbuzz", yes())
                     .arg("skia_use_system_harfbuzz", yes_if(use_system_libraries))
@@ -185,6 +186,7 @@ impl FinalBuildConfiguration {
             } else {
                 builder
                     .arg("skia_use_icu", no())
+                    .arg("skia_use_client_icu", no())
                     .arg("skia_use_icu4x", no())
                     .arg("skia_use_harfbuzz", no());
             }

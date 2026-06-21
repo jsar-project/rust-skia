@@ -12,11 +12,14 @@
 #include "modules/skparagraph/include/TextShadow.h"
 #include "modules/skparagraph/include/TextStyle.h"
 #include "modules/skparagraph/include/TypefaceFontProvider.h"
+#include "modules/skunicode/include/SkUnicode.h"
 
 // m84: needs definition of SkFontData
 #include "src/core/SkFontDescriptor.h"
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 using namespace skia::textlayout;
 
@@ -430,6 +433,42 @@ extern "C" {
 
     ParagraphStyle* C_ParagraphBuilder_getParagraphStyle(const ParagraphBuilder* self) {
         return new ParagraphStyle(self->getParagraphStyle());
+    }
+
+    void C_ParagraphBuilder_setWordsUtf8(ParagraphBuilder* self, const SkUnicode::Position* words, size_t len) {
+#if !defined(SK_DISABLE_LEGACY_CLIENT_UNICODE) && defined(SK_UNICODE_CLIENT_IMPLEMENTATION)
+        std::vector<SkUnicode::Position> wordBreaks;
+        if (len > 0) {
+            wordBreaks.assign(words, words + len);
+        }
+        self->setWordsUtf8(std::move(wordBreaks));
+#endif
+    }
+
+    void C_ParagraphBuilder_setGraphemeBreaksUtf8(ParagraphBuilder* self, const SkUnicode::Position* graphemes, size_t len) {
+#if !defined(SK_DISABLE_LEGACY_CLIENT_UNICODE) && defined(SK_UNICODE_CLIENT_IMPLEMENTATION)
+        std::vector<SkUnicode::Position> graphemeBreaks;
+        if (len > 0) {
+            graphemeBreaks.assign(graphemes, graphemes + len);
+        }
+        self->setGraphemeBreaksUtf8(std::move(graphemeBreaks));
+#endif
+    }
+
+    void C_ParagraphBuilder_setLineBreaksUtf8(
+        ParagraphBuilder* self,
+        const SkUnicode::Position* positions,
+        const SkUnicode::LineBreakType* types,
+        size_t len
+    ) {
+#if !defined(SK_DISABLE_LEGACY_CLIENT_UNICODE) && defined(SK_UNICODE_CLIENT_IMPLEMENTATION)
+        std::vector<SkUnicode::LineBreakBefore> lineBreaks;
+        lineBreaks.reserve(len);
+        for (size_t i = 0; i < len; ++i) {
+            lineBreaks.emplace_back(positions[i], types[i]);
+        }
+        self->setLineBreaksUtf8(std::move(lineBreaks));
+#endif
     }
 
     void C_ParagraphBuilder_Reset(ParagraphBuilder* self) {

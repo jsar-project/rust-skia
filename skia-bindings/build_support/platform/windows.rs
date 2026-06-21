@@ -98,7 +98,7 @@ impl PlatformDetails for Generic {
 
 fn generic_link_libraries(features: &Features) -> Vec<String> {
     let mut libs = vec!["usp10", "ole32", "user32", "gdi32", "fontsub"];
-    if !features[feature::TEXTLAYOUT_ICU4X] {
+    if !features[feature::TEXTLAYOUT_CLIENT_ICU] {
         // `Advapi32` is needed by `skunicode_icu.lib`.
         libs.push("Advapi32");
     }
