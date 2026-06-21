@@ -66,7 +66,7 @@ impl BinariesConfiguration {
 
         let mut ninja_built_libraries = Vec::new();
         let mut binding_libraries = Vec::new();
-        let mut additional_libraries = Vec::new();
+        let additional_libraries = Vec::new();
         let binding_files = vec!["bindings.rs".into()];
         let mut additional_files = Vec::new();
 

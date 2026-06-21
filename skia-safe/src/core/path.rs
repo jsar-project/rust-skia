@@ -1,4 +1,4 @@
-use std::{fmt, marker::PhantomData, mem::forget, ptr};
+use std::{fmt, marker::PhantomData, mem, mem::forget, ptr};
 
 use skia_bindings::{self as sb, SkPath, SkPath_Iter, SkPath_RawIter};
 
@@ -781,8 +781,12 @@ impl Path {
     ///
     /// example: <https://fiddle.skia.org/c/@Path_getLastPt>
     pub fn last_pt(&self) -> Option<Point> {
-        let mut last_pt = Point::default();
-        unsafe { self.native().getLastPt(last_pt.native_mut()) }.then_some(last_pt)
+        let last_pt = unsafe {
+            let opaque = self.native().getLastPt();
+            let point = mem::transmute_copy(&opaque);
+            Point::from_native_c(point)
+        };
+        Some(last_pt)
     }
 }
 

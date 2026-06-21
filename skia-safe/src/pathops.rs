@@ -1,7 +1,7 @@
 //! Wrapper for pathops/SkPathOps.h
 use crate::{prelude::*, Path, Rect};
 use skia_bindings::{self as sb, SkOpBuilder};
-use std::fmt;
+use std::{fmt, mem};
 
 pub use skia_bindings::SkPathOp as PathOp;
 variant_name!(PathOp::XOR);
@@ -9,13 +9,11 @@ variant_name!(PathOp::XOR);
 // TODO: I am not so sure if we should export these global functions.
 
 pub fn op(one: &Path, two: &Path, op: PathOp) -> Option<Path> {
-    let mut result = Path::default();
-    unsafe { sb::Op(one.native(), two.native(), op, result.native_mut()) }.then_some(result)
+    Some(unsafe { path_from_opaque(sb::Op(one.native(), two.native(), op)) })
 }
 
 pub fn simplify(path: &Path) -> Option<Path> {
-    let mut result = Path::default();
-    unsafe { sb::Simplify(path.native(), result.native_mut()) }.then_some(result)
+    Some(unsafe { path_from_opaque(sb::Simplify(path.native())) })
 }
 
 #[deprecated(
@@ -28,8 +26,12 @@ pub fn tight_bounds(path: &Path) -> Option<Rect> {
 }
 
 pub fn as_winding(path: &Path) -> Option<Path> {
-    let mut result = Path::default();
-    unsafe { sb::AsWinding(path.native(), result.native_mut()) }.then_some(result)
+    Some(unsafe { path_from_opaque(sb::AsWinding(path.native())) })
+}
+
+unsafe fn path_from_opaque(opaque: sb::__BindgenOpaqueArray<u64, 3usize>) -> Path {
+    let path = mem::transmute_copy(&opaque);
+    Path::from_native_c(path)
 }
 
 pub type OpBuilder = Handle<SkOpBuilder>;
@@ -62,8 +64,7 @@ impl OpBuilder {
     }
 
     pub fn resolve(&mut self) -> Option<Path> {
-        let mut path = Path::default();
-        unsafe { self.native_mut().resolve(path.native_mut()) }.then_some(path)
+        Some(unsafe { path_from_opaque(self.native_mut().resolve()) })
     }
 }
 

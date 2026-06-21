@@ -1,4 +1,5 @@
 use std::ffi::CString;
+use std::mem;
 
 use crate::{interop, prelude::*, Path};
 
@@ -6,8 +7,11 @@ use skia_bindings as sb;
 
 pub fn from_svg(svg: impl AsRef<str>) -> Option<Path> {
     let str = CString::new(svg.as_ref()).unwrap();
-    let mut path = Path::default();
-    unsafe { sb::SkParsePath_FromSVGString(str.as_ptr(), path.native_mut()) }.then_some(path)
+    Some(unsafe {
+        let opaque = sb::SkParsePath_FromSVGString(str.as_ptr());
+        let path = mem::transmute_copy(&opaque);
+        Path::from_native_c(path)
+    })
 }
 
 pub use skia_bindings::SkParsePath_PathEncoding as PathEncoding;

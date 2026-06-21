@@ -10,8 +10,8 @@ unsafe_send_sync!(ParagraphBuilder);
 
 pub type UnicodePosition = sb::SkUnicode_Position;
 pub type LineBreakType = sb::SkUnicode_LineBreakType;
-variant_name!(LineBreakType::SoftLineBreak);
-variant_name!(LineBreakType::HardLineBreak);
+variant_name!(LineBreakType::kSoftLineBreak);
+variant_name!(LineBreakType::kHardLineBreak);
 
 impl NativeDrop for sb::skia_textlayout_ParagraphBuilder {
     fn drop(&mut self) {
