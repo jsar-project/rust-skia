@@ -82,7 +82,7 @@ impl ParagraphBuilder {
     }
 
     pub fn new(style: &ParagraphStyle, font_collection: impl Into<FontCollection>) -> Self {
-        #[cfg(feature = "embed-icudtl")]
+        #[cfg(all(feature = "embed-icudtl", not(feature = "textlayout-icu4x")))]
         crate::icu::init();
 
         Self::from_ptr(unsafe {

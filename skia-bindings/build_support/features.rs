@@ -51,6 +51,9 @@ impl Features {
         if cfg!(feature = "textlayout") {
             features += feature::TEXTLAYOUT;
         }
+        if cfg!(feature = "textlayout-icu4x") {
+            features += feature::TEXTLAYOUT_ICU4X;
+        }
         if cfg!(feature = "svg") {
             features += feature::SVG;
         }
@@ -191,6 +194,8 @@ pub mod feature {
 
     /// Features related to text layout. Modules skshaper and skparagraph
     pub const TEXTLAYOUT: &str = "textlayout";
+    /// Use the ICU4X implementation for text layout instead of ICU.
+    pub const TEXTLAYOUT_ICU4X: &str = "textlayout-icu4x";
     /// Support for rendering SVG
     pub const SVG: &str = "svg";
     /// Support the encoding of bitmap data to the WEBP image format
@@ -205,9 +210,15 @@ pub mod feature {
 
     pub const FREETYPE_SPECIFIC: &[&str] = &[EMBED_FREETYPE, FREETYPE_WOFF2];
 
-    pub const DEPENDENCIES: &[(&str, &[&str])] = &[(EGL, &[GL]), (X11, &[GL]), (WAYLAND, &[EGL])];
+    pub const DEPENDENCIES: &[(&str, &[&str])] = &[
+        (EGL, &[GL]),
+        (X11, &[GL]),
+        (WAYLAND, &[EGL]),
+        (TEXTLAYOUT_ICU4X, &[TEXTLAYOUT]),
+    ];
 
     pub const KEY_REPLACEMENTS: &[(&str, &str)] = &[
+        (TEXTLAYOUT_ICU4X, "txticu4x"),
         (WEBP_ENCODE, "webpe"),
         (WEBP_DECODE, "webpd"),
         (EMBED_FREETYPE, "ftembed"),

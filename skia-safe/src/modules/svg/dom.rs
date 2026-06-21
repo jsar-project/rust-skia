@@ -96,7 +96,11 @@ impl Dom {
 
     pub fn render(&self, canvas: &Canvas) {
         // TODO: may be we should init ICU whenever we expose a Canvas?
-        #[cfg(all(feature = "embed-icudtl", feature = "textlayout"))]
+        #[cfg(all(
+            feature = "embed-icudtl",
+            feature = "textlayout",
+            not(feature = "textlayout-icu4x")
+        ))]
         crate::icu::init();
 
         unsafe { sb::SkSVGDOM::render(self.native() as &_, canvas.native_mut()) }

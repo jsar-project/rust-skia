@@ -22,6 +22,8 @@ pub mod lib {
     pub const SK_RESOURCES: &str = "skresources";
     pub const SK_UNICODE_CORE: &str = "skunicode_core";
     pub const SK_UNICODE_ICU: &str = "skunicode_icu";
+    pub const SK_UNICODE_ICU4X: &str = "skunicode_icu4x";
+    pub const ICU4X_RUST: &str = "icu4x_rust";
 }
 
 /// The configuration of the resulting binaries.
@@ -43,6 +45,10 @@ pub struct BinariesConfiguration {
     /// with.
     pub binding_libraries: Vec<String>,
 
+    /// Static libraries produced by auxiliary build actions that dependent projects need to link
+    /// with, but that are not ninja targets themselves.
+    pub additional_libraries: Vec<String>,
+
     /// Files that are generated in the binding process (this is `bindings.rs`).
     pub binding_files: Vec<PathBuf>,
 
@@ -61,17 +67,23 @@ impl BinariesConfiguration {
 
         let mut ninja_built_libraries = Vec::new();
         let mut binding_libraries = Vec::new();
+        let mut additional_libraries = Vec::new();
         let binding_files = vec!["bindings.rs".into()];
         let mut additional_files = Vec::new();
 
         if features[feature::TEXTLAYOUT] {
-            if target.is_windows() {
+            if target.is_windows() && !features[feature::TEXTLAYOUT_ICU4X] {
                 additional_files.push(ICUDTL_DAT.into());
             }
             ninja_built_libraries.push(lib::SK_PARAGRAPH.into());
             ninja_built_libraries.push(lib::SK_SHAPER.into());
             ninja_built_libraries.push(lib::SK_UNICODE_CORE.into());
-            ninja_built_libraries.push(lib::SK_UNICODE_ICU.into());
+            if features[feature::TEXTLAYOUT_ICU4X] {
+                ninja_built_libraries.push(lib::SK_UNICODE_ICU4X.into());
+                additional_libraries.push(lib::ICU4X_RUST.into());
+            } else {
+                ninja_built_libraries.push(lib::SK_UNICODE_ICU.into());
+            }
         }
         if features[feature::SVG] {
             ninja_built_libraries.push(lib::SVG.into());
@@ -95,6 +107,7 @@ impl BinariesConfiguration {
             link_libraries,
             ninja_built_libraries,
             binding_libraries,
+            additional_libraries,
             binding_files,
             additional_files,
             skia_debug,
@@ -104,6 +117,7 @@ impl BinariesConfiguration {
     pub fn built_libraries(&self, include_bindings: bool) -> impl Iterator<Item = &str> {
         self.ninja_built_libraries
             .iter()
+            .chain(self.additional_libraries.iter())
             .chain(if include_bindings {
                 self.binding_libraries.iter()
             } else {

@@ -905,10 +905,17 @@ pub(crate) mod definitions {
                 "obj/modules/skshaper/skshaper.ninja".into(),
                 "obj/modules/skparagraph/skparagraph.ninja".into(),
                 "obj/modules/skunicode/skunicode_core.ninja".into(),
-                "obj/modules/skunicode/skunicode_icu.ninja".into(),
             ]);
-            // shaper.cpp includes SkLoadICU.h
-            if !use_system_libraries {
+            if features[feature::TEXTLAYOUT_ICU4X] {
+                files.extend(vec![
+                    "obj/modules/skunicode/skunicode_icu4x.ninja".into(),
+                    "obj/third_party/icu4x/icu4x.ninja".into(),
+                ]);
+            } else {
+                files.push("obj/modules/skunicode/skunicode_icu.ninja".into());
+            }
+            // shaper.cpp includes SkLoadICU.h when using the ICU implementation.
+            if !features[feature::TEXTLAYOUT_ICU4X] && !use_system_libraries {
                 files.push("obj/third_party/icu/icu.ninja".into())
             }
         }

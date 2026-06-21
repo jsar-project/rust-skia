@@ -361,7 +361,11 @@ pub mod pdf {
         }
 
         // We enable harfbuzz font sub-setting in PDF documents if textlayout is enabled.
-        #[cfg(all(feature = "textlayout", feature = "embed-icudtl"))]
+        #[cfg(all(
+            feature = "textlayout",
+            feature = "embed-icudtl",
+            not(feature = "textlayout-icu4x")
+        ))]
         crate::icu::init();
 
         let mut stream = RustWStream::new(writer);

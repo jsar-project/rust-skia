@@ -1,3 +1,4 @@
 [submodule "skia"]
 	path = skia-bindings/skia
-	url = https://github.com/rust-skia/skia.git
+	url = https://github.com/jsar-project/skia.git
+	branch = m142-0.89.1-patch

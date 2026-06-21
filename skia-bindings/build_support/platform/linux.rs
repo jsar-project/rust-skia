@@ -57,11 +57,13 @@ pub fn link_libraries(features: &Features) -> Vec<String> {
         add_pkg_config_libs(&mut libs, "harfbuzz", &["harfbuzz"]);
         add_pkg_config_libs(&mut libs, "expat", &["expat"]);
 
-        // ICU libraries - try pkg-config first, fallback to manual linking
-        add_pkg_config_libs(&mut libs, "icu-uc", &["icuuc"]);
-        add_pkg_config_libs(&mut libs, "icu-i18n", &["icui18n"]);
-        add_pkg_config_libs(&mut libs, "icu-io", &["icuio"]);
-        // Note: removed icutest and icutu as they appear to be development/testing utilities
+        if !features[feature::TEXTLAYOUT_ICU4X] {
+            // ICU libraries - try pkg-config first, fallback to manual linking
+            add_pkg_config_libs(&mut libs, "icu-uc", &["icuuc"]);
+            add_pkg_config_libs(&mut libs, "icu-i18n", &["icui18n"]);
+            add_pkg_config_libs(&mut libs, "icu-io", &["icuio"]);
+            // Note: removed icutest and icutu as they appear to be development/testing utilities
+        }
 
         if features[feature::WEBP_ENCODE] || features[feature::WEBP_DECODE] {
             add_pkg_config_libs(&mut libs, "libwebp", &["webp"]);

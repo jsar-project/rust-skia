@@ -1946,7 +1946,11 @@ impl Canvas {
         paint: &Paint,
     ) -> &Self {
         let origin = origin.into();
-        #[cfg(all(feature = "textlayout", feature = "embed-icudtl"))]
+        #[cfg(all(
+            feature = "textlayout",
+            feature = "embed-icudtl",
+            not(feature = "textlayout-icu4x")
+        ))]
         crate::icu::init();
         unsafe {
             self.native_mut().drawTextBlob(
