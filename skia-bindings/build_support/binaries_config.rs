@@ -16,6 +16,7 @@ const ICUDTL_DAT: &str = "icudtl.dat";
 pub mod lib {
     pub const SKIA: &str = "skia";
     pub const SKIA_BINDINGS: &str = "skia-bindings";
+    pub const PATHKIT: &str = "pathkit";
     pub const SK_SHAPER: &str = "skshaper";
     pub const SK_PARAGRAPH: &str = "skparagraph";
     pub const SVG: &str = "svg";
@@ -86,6 +87,12 @@ impl BinariesConfiguration {
         if features[feature::SVG] {
             ninja_built_libraries.push(lib::SVG.into());
             ninja_built_libraries.push(lib::SK_RESOURCES.into());
+        }
+        // PDF and XPS pull PathOps into libskia through their GN dependencies. When PDF is
+        // disabled (and XPS is unavailable or disabled on the supported configurations), build
+        // PathKit separately so the always-available Rust PathOps API still has an implementation.
+        if !features[feature::PDF] {
+            ninja_built_libraries.push(lib::PATHKIT.into());
         }
 
         let link_libraries = platform::link_libraries(features, &target);
