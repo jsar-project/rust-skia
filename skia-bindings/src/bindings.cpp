@@ -3433,10 +3433,14 @@ extern "C" void C_SkPDF_AttributeList_destruct(SkPDF::AttributeList *self) {
     self->~AttributeList();
 }
 
+#if defined(SK_SUPPORT_PDF)
+
 extern "C" void C_SkPDF_AttributeList_appendFloatArray(SkPDF::AttributeList *self, const char *owner, const char *name, const float *const value, size_t len) {
     std::vector<float> v(value, value + len);
     self->appendFloatArray(owner, name, v);
 }
+
+#endif  // defined(SK_SUPPORT_PDF)
 
 extern "C" SkPDF::StructureElementNode *C_SkPDF_StructureElementNode_new() {
     return new SkPDF::StructureElementNode();
